@@ -2,20 +2,29 @@ import { MikroORM } from '@mikro-orm/core';
 import { __prod__ } from './constants';
 import { Rating } from './entities/Rating';
 import microConfig from './mikro-orm.config';
+import express from 'express';
+import { ApolloServer } from 'apollo-server-express';
+import { buildSchema } from 'type-graphql';
+import { HelloResolver } from './resolvers/hello';
+
 const main = async () => {
     const orm = await MikroORM.init(microConfig);
     await orm.getMigrator().up();
 
-    // const rating = orm.em.create(Rating, {
-    //     title: 'moon',
-    //     createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //     id: 123,
-    // });
-    // await orm.em.persistAndFlush(rating);
+    const app = express();
 
-    // const ratings = await orm.em.find(Rating, {});
-    // console.log(ratings);
+    const apolloServer = new ApolloServer({
+        schema: await buildSchema({
+            resolvers: [HelloResolver],
+            validate: false,
+        }),
+    });
+    await apolloServer.start();
+    apolloServer.applyMiddleware({ app });
+
+    app.listen(8000, () => {
+        console.log('server started on localhost:8000');
+    });
 };
 
 main().catch((e) => {
