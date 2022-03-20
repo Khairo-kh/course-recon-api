@@ -6,7 +6,8 @@
     "scripts": {
         "start": "node dist/index.ts",
         "watch": "tsc -w",
-        "dev": "nodemon dist/index.js"
+        "dev": "nodemon dist/index.js",
+        "clean": "rm -rf node_modules && rm -rf dist"
     },
     "author": "Khairo Khatib",
     "license": "GPL-3.0",
@@ -28,6 +29,7 @@
         "express": "^4.17.3",
         "graphql": "15.8.0",
         "pg": "^8.7.3",
+        "reflect-metadata": "^0.1.13",
         "type-graphql": "^1.1.1"
     },
     "mikro-orm": {

@@ -24,6 +24,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz(0)",
@@ -32,6 +41,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "'NOW()'",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -42,7 +52,17 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "'NOW()'",
           "mappedType": "datetime"
+        },
+        "scale": {
+          "name": "scale",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
         }
       },
       "name": "rating",
