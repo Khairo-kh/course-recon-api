@@ -18,11 +18,11 @@ export class Rating {
 
     @Field()
     @Property({ default: 'NOW()' })
-    createdAt: Date = new Date();
+    createdAt?: Date = new Date();
 
     @Field()
     @Property({ onUpdate: () => new Date(), default: 'NOW()' })
-    updatedAt: Date = new Date();
+    updatedAt?: Date = new Date();
 
     @Field(() => Float)
     @Property({ type: 'float' })
