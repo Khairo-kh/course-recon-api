@@ -1,0 +1,34 @@
+{
+    "name": "ratemycourse",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node dist/index.ts",
+        "watch": "tsc -w",
+        "dev": "nodemon dist/index.js"
+    },
+    "author": "Khairo Khatib",
+    "license": "GPL-3.0",
+    "devDependencies": {
+        "@types/node": "^17.0.21",
+        "nodemon": "^2.0.15",
+        "prettier": "2.6.0",
+        "ts-node": "^10.7.0",
+        "typescript": "^4.6.2"
+    },
+    "dependencies": {
+        "@mikro-orm/cli": "^5.1.0",
+        "@mikro-orm/core": "^5.1.0",
+        "@mikro-orm/migrations": "^5.1.0",
+        "@mikro-orm/postgresql": "^5.1.0",
+        "pg": "^8.7.3"
+    },
+    "mikro-orm": {
+        "useTsNode": true,
+        "configPaths": [
+            "./src/mikro-orm.config.ts",
+            "./dist/mikro-orm.config.js"
+        ]
+    }
+}
