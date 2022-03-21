@@ -1,6 +1,6 @@
 import { Rating } from '../entities/Rating';
 import { MyContext } from 'src/types';
-import { Arg, Ctx, Float, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Float, Mutation, Query, Resolver } from 'type-graphql';
 
 @Resolver()
 export class RatingResolver {
