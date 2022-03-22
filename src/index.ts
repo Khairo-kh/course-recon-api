@@ -9,9 +9,9 @@ import { buildSchema } from 'type-graphql';
 import { HelloResolver } from './resolvers/hello';
 import { RatingResolver } from './resolvers/rating';
 import { UserResolver } from './resolvers/user';
-import redis from 'redis';
 import connectRedis from 'connect-redis';
 import { MyContext } from './types';
+import Redis from 'ioredis';
 
 const main = async () => {
     const orm = await MikroORM.init(microConfig);
@@ -20,13 +20,15 @@ const main = async () => {
     const app = express();
 
     const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient();
+    const redis = new Redis('127.0.0.1:6379');
+
+    app.set('trust proxy', 1);
 
     app.use(
         session({
-            name: 'sid',
+            name: 'cid',
             store: new RedisStore({
-                client: redisClient,
+                client: redis,
                 disableTouch: true,
             }),
             cookie: {
@@ -51,7 +53,9 @@ const main = async () => {
     });
 
     await apolloServer.start();
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({
+        app,
+    });
 
     app.listen(8000, () => {
         console.log('server started on localhost:8000');
