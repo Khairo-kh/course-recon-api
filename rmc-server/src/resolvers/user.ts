@@ -8,6 +8,7 @@ import {
     InputType,
     Mutation,
     ObjectType,
+    Query,
     Resolver,
 } from 'type-graphql';
 
@@ -40,6 +41,14 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+    @Query(() => User, { nullable: true })
+    async getMe(@Ctx() { req, em }: MyContext): Promise<User | null> {
+        if (!req.session.userId) {
+            return null;
+        }
+        const me = await em.findOne(User, { id: req.session.userId });
+        return me;
+    }
     @Mutation(() => UserResponse)
     async register(
         @Arg('options') options: UsernamePasswordInput,
@@ -118,7 +127,7 @@ export class UserResolver {
                 ],
             };
         }
-        req.session['userId'] = user.id;
+        req.session.userId = user.id;
         console.log('req.session ', req.session);
         return {
             user,
