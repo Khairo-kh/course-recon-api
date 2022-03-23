@@ -12,6 +12,7 @@ import { UserResolver } from './resolvers/user';
 import connectRedis from 'connect-redis';
 import { MyContext } from './types';
 import Redis from 'ioredis';
+import cors from 'cors';
 
 const main = async () => {
     const orm = await MikroORM.init(microConfig);
@@ -24,6 +25,12 @@ const main = async () => {
 
     app.set('trust proxy', 1);
 
+    app.use(
+        cors({
+            origin: 'http://localhost:3000',
+            credentials: true,
+        })
+    );
     app.use(
         session({
             name: 'cid',
@@ -55,6 +62,7 @@ const main = async () => {
     await apolloServer.start();
     apolloServer.applyMiddleware({
         app,
+        cors: false,
     });
 
     app.listen(8000, () => {
