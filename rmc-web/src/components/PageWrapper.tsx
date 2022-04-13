@@ -1,23 +1,23 @@
 import { Box } from '@chakra-ui/react';
 
 interface PageWrapperProps {
-    variant?: 'small' | 'regular';
+  variant?: 'small' | 'regular';
 }
 
 const PageWrapper: React.FC<PageWrapperProps> = ({
-    children,
-    variant = 'regular',
+  children,
+  variant = 'regular',
 }) => {
-    return (
-        <Box
-            maxW={variant === 'regular' ? '800px' : '500px'}
-            mx="auto"
-            w="100%"
-            mt={12}
-        >
-            {children}
-        </Box>
-    );
+  return (
+    <Box
+      maxW={variant === 'regular' ? '800px' : '500px'}
+      mx="auto"
+      w="100%"
+      mt={12}
+    >
+      {children}
+    </Box>
+  );
 };
 
 export default PageWrapper;
