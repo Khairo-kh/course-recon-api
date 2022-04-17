@@ -1,6 +1,5 @@
 query Me {
   getMe {
-    id
-    username
+    ...UserFragment
   }
 }
