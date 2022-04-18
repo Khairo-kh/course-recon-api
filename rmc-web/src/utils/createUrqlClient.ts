@@ -17,11 +17,11 @@ export const createUrqlClient = (ssrExchange: any) => ({
     cacheExchange({
       updates: {
         Mutation: {
-          login: (_result, args, cache, info) => {
+          login: (resultParam, _args, cache, _info) => {
             typedUpdateQuery<LoginMutation, MeQuery>(
               cache,
               { query: MeDocument },
-              _result,
+              resultParam,
               (result, query) => {
                 if (result.login.errors) {
                   return query;
@@ -31,11 +31,11 @@ export const createUrqlClient = (ssrExchange: any) => ({
               }
             );
           },
-          register: (_result, args, cache, info) => {
+          register: (resultParam, _args, cache, _info) => {
             typedUpdateQuery<RegisterMutation, MeQuery>(
               cache,
               { query: MeDocument },
-              _result,
+              resultParam,
               (result, query) => {
                 if (result.register.errors) {
                   return query;
@@ -45,11 +45,11 @@ export const createUrqlClient = (ssrExchange: any) => ({
               }
             );
           },
-          logout: (_result, args, cache, info) => {
+          logout: (resultParam, _args, cache, _info) => {
             typedUpdateQuery<LogoutMutation, MeQuery>(
               cache,
               { query: MeDocument },
-              _result,
+              resultParam,
               () => ({ getMe: null })
             );
           },

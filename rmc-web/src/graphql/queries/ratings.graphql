@@ -1,0 +1,10 @@
+query Ratings {
+  ratings {
+    id
+    title
+    createdAt
+    updatedAt
+    description
+    scale
+  }
+}
