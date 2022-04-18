@@ -8,11 +8,13 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
+import { withUrqlClient } from 'next-urql';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { InputField } from '../components/InputField';
 import PageWrapper from '../components/PageWrapper';
 import { useRegisterMutation } from '../generated/graphql';
+import { createUrqlClient } from '../utils/createUrqlClient';
 import { toErrorMap } from '../utils/toErrorMap';
 
 interface registerProps {}
@@ -23,9 +25,9 @@ const Register: React.FC<registerProps> = ({}) => {
   return (
     <PageWrapper variant="small">
       <Formik
-        initialValues={{ username: '', password: '' }}
+        initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register(values);
+          const response = await register({options: values});
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -71,7 +73,7 @@ const Register: React.FC<registerProps> = ({}) => {
                       name="email"
                       label="Email"
                       placeholder="john.doe@mail.com"
-                      disabled
+                      
                     />
                   </GridItem>
                   <GridItem colSpan={2}>
@@ -115,4 +117,4 @@ const Register: React.FC<registerProps> = ({}) => {
   );
 };
 
-export default Register;
+export default withUrqlClient(createUrqlClient)(Register);

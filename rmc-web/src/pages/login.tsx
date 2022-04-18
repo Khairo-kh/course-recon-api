@@ -8,11 +8,13 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
+import { withUrqlClient } from 'next-urql';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { InputField } from '../components/InputField';
 import PageWrapper from '../components/PageWrapper';
 import { useLoginMutation } from '../generated/graphql';
+import { createUrqlClient } from '../utils/createUrqlClient';
 import { toErrorMap } from '../utils/toErrorMap';
 
 interface registerProps {}
@@ -23,9 +25,9 @@ const Login: React.FC<{}> = ({}) => {
   return (
     <PageWrapper variant="small">
       <Formik
-        initialValues={{ username: '', password: '' }}
+        initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ options: values });
+          const response = await login(values);
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -45,9 +47,9 @@ const Login: React.FC<{}> = ({}) => {
                 <SimpleGrid columns={2} columnGap={2} spacing={4}>
                   <GridItem colSpan={2}>
                     <InputField
-                      name="username"
-                      label="Username"
-                      placeholder="username"
+                      name="usernameOrEmail"
+                      label="Username or Email"
+                      placeholder="username or email"
                     />
                   </GridItem>
 
@@ -92,4 +94,4 @@ const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);
