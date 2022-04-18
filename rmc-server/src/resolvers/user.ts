@@ -5,21 +5,13 @@ import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
 } from 'type-graphql';
-
-@InputType()
-class UsernamePasswordInput {
-  @Field()
-  username: string;
-
-  @Field()
-  password: string;
-}
+import { UsernamePasswordInput } from './UsernamePasswordInput';
+import { registerValidation } from '../utils/registerValidation';
 
 @ObjectType()
 class FieldError {
@@ -41,6 +33,12 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => Boolean)
+  async forgotPassword(@Arg('email') email: string, @Ctx() { em }: MyContext) {
+    // const user = await em.findOne(User, { email });
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async getMe(@Ctx() { req, em }: MyContext): Promise<User | null> {
     if (!req.session.userId) {
@@ -54,32 +52,16 @@ export class UserResolver {
     @Arg('options') options: UsernamePasswordInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    if (options.username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: 'username',
-            message: 'username must be at least 3 characters',
-          },
-        ],
-      };
-    }
-
-    if (options.password.length < 8) {
-      return {
-        errors: [
-          {
-            field: 'password',
-            message: 'password must at least be 8 characters',
-          },
-        ],
-      };
+    const errors = registerValidation(options);
+    if (errors) {
+      return { errors };
     }
 
     const passwordHash = await argon2.hash(options.password);
     const user = em.create(User, {
       username: options.username,
       password: passwordHash,
+      email: options.email,
     });
     try {
       await em.persistAndFlush(user);
@@ -101,21 +83,27 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: options.username });
+    const user = await em.findOne(
+      User,
+      usernameOrEmail.includes('@')
+        ? { email: usernameOrEmail }
+        : { username: usernameOrEmail }
+    );
     if (!user) {
       return {
         errors: [
           {
-            field: 'username',
+            field: 'usernameOrEmail',
             message: 'could not find a match for the provided username',
           },
         ],
       };
     }
-    const valid = await argon2.verify(user.password, options.password);
+    const valid = await argon2.verify(user.password, password);
     if (!valid) {
       return {
         errors: [
@@ -136,7 +124,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   logout(@Ctx() { req, res }: MyContext) {
     return new Promise((resolve) =>
-    req.session.destroy((err) => {
+      req.session.destroy((err) => {
         res.clearCookie('cid');
         if (err) {
           console.log(err);
