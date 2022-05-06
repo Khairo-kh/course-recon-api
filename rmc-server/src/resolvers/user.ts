@@ -12,6 +12,8 @@ import {
 } from 'type-graphql';
 import { UsernamePasswordInput } from './UsernamePasswordInput';
 import { registerValidation } from '../utils/registerValidation';
+import { sendEmail } from '../utils/email';
+import { v4 } from 'uuid';
 
 @ObjectType()
 class FieldError {
@@ -34,8 +36,27 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg('email') email: string, @Ctx() { em }: MyContext) {
-    // const user = await em.findOne(User, { email });
+  async forgotPassword(
+    @Arg('email') email: string,
+    @Ctx() { em, redis }: MyContext
+  ) {
+    const user = await em.findOne(User, { email });
+    if (!user) {
+      return true;
+    }
+    const token = v4();
+    await redis.set(
+      `reset-pass:${token}`,
+      user.id,
+      'ex',
+      1000 * 60 * 60 * 24 * 3
+    );
+
+    sendEmail(
+      email,
+      `<a href="http://localhost:3000/reset-password/${token}">reset password</a>`,
+      'password reset request'
+    );
     return true;
   }
 
