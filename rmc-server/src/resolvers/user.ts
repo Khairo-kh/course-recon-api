@@ -35,6 +35,55 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => UserResponse)
+  async resetPassword(
+    @Arg('token') token: string,
+    @Arg('newPassword') newPassword: string,
+    @Ctx() { redis, em, req }: MyContext
+  ): Promise<UserResponse> {
+    if (newPassword.length < 8) {
+      return {
+        errors: [
+          {
+            field: 'newPassword',
+            message: 'must at least be 8 characters long',
+          },
+        ],
+      };
+    }
+
+    const tokenKey = `reset-pass:${token}`;
+    const userId = await redis.get(tokenKey);
+    if (!userId) {
+      return {
+        errors: [
+          {
+            field: 'token',
+            message: 'token expired',
+          },
+        ],
+      };
+    }
+
+    const user = await em.findOne(User, { id: parseInt(userId) });
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: 'token',
+            message: 'invalid user',
+          },
+        ],
+      };
+    }
+
+    user.password = await argon2.hash(newPassword);
+    await em.persistAndFlush(user);
+    redis.del(tokenKey);
+
+    return { user };
+  }
+
   @Mutation(() => Boolean)
   async forgotPassword(
     @Arg('email') email: string,
