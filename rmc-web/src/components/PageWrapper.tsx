@@ -14,6 +14,7 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
       mx="auto"
       w="100%"
       mt={12}
+      p={5}
     >
       {children}
     </Box>

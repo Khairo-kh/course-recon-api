@@ -23,11 +23,11 @@ const Register: React.FC<registerProps> = ({}) => {
   const router = useRouter();
   const [, register] = useRegisterMutation();
   return (
-    <PageWrapper variant="small">
+    <PageWrapper variant="regular">
       <Formik
         initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register({options: values});
+          const response = await register({ options: values });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -43,13 +43,14 @@ const Register: React.FC<registerProps> = ({}) => {
               minH="80vh"
               h="100%"
             >
-              <Box bg="white" p={5} borderRadius={10}>
+              <Box bg="white" p={10} borderRadius={10}>
                 <SimpleGrid columns={2} columnGap={2} spacing={4}>
                   <GridItem colSpan={[2, 1]}>
                     <InputField
                       name="firstName"
                       label="First Name"
                       placeholder="John"
+                      _size="lg"
                       disabled
                     />
                   </GridItem>
@@ -58,6 +59,7 @@ const Register: React.FC<registerProps> = ({}) => {
                       name="lastName"
                       label="Last Name"
                       placeholder="Doe"
+                      _size="lg"
                       disabled
                     />
                   </GridItem>
@@ -66,6 +68,7 @@ const Register: React.FC<registerProps> = ({}) => {
                       name="username"
                       label="Username"
                       placeholder="username"
+                      _size="lg"
                     />
                   </GridItem>
                   <GridItem colSpan={2}>
@@ -73,7 +76,7 @@ const Register: React.FC<registerProps> = ({}) => {
                       name="email"
                       label="Email"
                       placeholder="john.doe@mail.com"
-                      
+                      _size="lg"
                     />
                   </GridItem>
                   <GridItem colSpan={2}>
@@ -82,6 +85,7 @@ const Register: React.FC<registerProps> = ({}) => {
                       label="Password"
                       type="password"
                       placeholder="password"
+                      _size="lg"
                     />
                   </GridItem>
                   <GridItem colSpan={2}>

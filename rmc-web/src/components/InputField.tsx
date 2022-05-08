@@ -10,11 +10,12 @@ import { InputHTMLAttributes } from 'react';
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
   label: string;
+  _size?: 'lg' | 'md' | 'sm' | 'xs' | undefined;
 };
 
 export const InputField: React.FC<InputFieldProps> = ({
   label,
-  size: _,
+  _size,
   ...props
 }) => {
   const [field, { error }] = useField(props);
@@ -26,6 +27,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         {...props}
         id={field.name}
         name={field.name}
+        size={_size || 'md'}
         placeholder={props.placeholder}
       />
       {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
