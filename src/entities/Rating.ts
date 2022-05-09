@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './User';
 
 @ObjectType()
 @Entity()
@@ -34,4 +36,12 @@ export class Rating extends BaseEntity {
   @Field(() => Float)
   @Column({ type: 'float' })
   scale: number;
+
+  @Field()
+  @Column()
+  reviewerId: number;
+
+
+  @ManyToOne(() => User, (user) => user.ratings)
+  reviewer: User;
 }

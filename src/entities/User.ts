@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Rating } from './Rating';
 
 @ObjectType()
 @Entity()
@@ -33,4 +35,7 @@ export class User extends BaseEntity {
   @Field()
   @Column({ unique: true })
   email!: string;
+
+  @OneToMany(() => Rating, (rating) => rating.reviewer)
+  ratings: Rating[];
 }
