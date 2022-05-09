@@ -1,30 +1,37 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, Float, ObjectType } from 'type-graphql';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
-export class Rating {
+export class Rating extends BaseEntity {
   @Field()
-  @PrimaryKey()
+  @PrimaryGeneratedColumn({ type: 'int' })
   id!: number;
 
   @Field()
-  @Property({ type: 'text' })
+  @Column()
   title!: string;
 
   @Field()
-  @Property()
+  @Column()
   description!: string;
 
   @Field()
-  @Property({ default: 'NOW()' })
-  createdAt?: Date = new Date();
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Field()
-  @Property({ onUpdate: () => new Date(), default: 'NOW()' })
-  updatedAt?: Date = new Date();
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Field(() => Float)
-  @Property({ type: 'float' })
-  scale!: number;
+  @Column({ type: 'float' })
+  scale: number;
 }

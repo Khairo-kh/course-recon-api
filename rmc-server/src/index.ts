@@ -1,7 +1,5 @@
 import 'reflect-metadata';
-import { MikroORM } from '@mikro-orm/core';
 import { __prod__ } from './constants';
-import microConfig from './mikro-orm.config';
 import session from 'express-session';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
@@ -13,13 +11,29 @@ import connectRedis from 'connect-redis';
 import { MyContext } from './types';
 import Redis from 'ioredis';
 import cors from 'cors';
-// import { sendEmail } from './utils/email';
-// import { User } from './entities/User';
+import { DataSource } from 'typeorm';
+import { Rating } from './entities/Rating';
+import { User } from './entities/User';
 
 const main = async () => {
-  const orm = await MikroORM.init(microConfig);
-  // orm.em.nativeDelete(User, {})
-  await orm.getMigrator().up();
+  const dataSource = new DataSource({
+    type: 'postgres',
+    database: 'courserecon',
+    username: 'postgres',
+    password: 'postgres',
+    synchronize: true,
+    logging: 'all',
+    logger: 'advanced-console',
+    entities: [Rating, User],
+  });
+
+  dataSource.initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch((err) => {
+        console.error("Error during Data Source initialization", err)
+    })
 
   const app = express();
 
@@ -59,7 +73,7 @@ const main = async () => {
       resolvers: [HelloResolver, RatingResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }): MyContext => ({ dataSource, req, res, redis }),
   });
 
   await apolloServer.start();

@@ -39,7 +39,7 @@ export class UserResolver {
   async resetPassword(
     @Arg('token') token: string,
     @Arg('newPassword') newPassword: string,
-    @Ctx() { redis, em, req }: MyContext
+    @Ctx() { redis }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length < 8) {
       return {
@@ -65,7 +65,7 @@ export class UserResolver {
       };
     }
 
-    const user = await em.findOne(User, { id: parseInt(userId) });
+    const user = await User.findOneBy({ id: parseInt(userId) });
     if (!user) {
       return {
         errors: [
@@ -77,8 +77,11 @@ export class UserResolver {
       };
     }
 
-    user.password = await argon2.hash(newPassword);
-    await em.persistAndFlush(user);
+    User.update(
+      { id: parseInt(userId) },
+      { password: await argon2.hash(newPassword) }
+    );
+
     redis.del(tokenKey);
 
     return { user };
@@ -87,9 +90,9 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async forgotPassword(
     @Arg('email') email: string,
-    @Ctx() { em, redis }: MyContext
+    @Ctx() { redis }: MyContext
   ) {
-    const user = await em.findOne(User, { email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return true;
     }
@@ -110,17 +113,17 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  async getMe(@Ctx() { req, em }: MyContext): Promise<User | null> {
+  getMe(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {
       return null;
     }
-    const me = await em.findOne(User, { id: req.session.userId });
-    return me;
+    return User.findOneBy({ id: req.session.userId });
   }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { dataSource }: MyContext
   ): Promise<UserResponse> {
     const errors = registerValidation(options);
     if (errors) {
@@ -128,13 +131,20 @@ export class UserResolver {
     }
 
     const passwordHash = await argon2.hash(options.password);
-    const user = em.create(User, {
-      username: options.username,
-      password: passwordHash,
-      email: options.email,
-    });
+    let user;
     try {
-      await em.persistAndFlush(user);
+      const result = await dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values({
+          username: options.username,
+          password: passwordHash,
+          email: options.email,
+        })
+        .returning('*')
+        .execute();
+      user = result.raw[0];
     } catch (error) {
       if (error.code === '23505') {
         return {
@@ -155,10 +165,9 @@ export class UserResolver {
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(
-      User,
+    const user = await User.findOneBy(
       usernameOrEmail.includes('@')
         ? { email: usernameOrEmail }
         : { username: usernameOrEmail }
