@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import { Rating } from './Rating';
 import {
   BaseEntity,
@@ -17,9 +17,9 @@ export class Course extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   id!: number;
 
-  @Field(() => Int)
+  @Field()
   @Column()
-  externalId!: number;
+  externalId!: string;
 
   @Field()
   @Column()
@@ -27,11 +27,11 @@ export class Course extends BaseEntity {
 
   @Field()
   @Column()
-  subject!: string;
+  subject!: string; // SOEN
 
-  @Field(() => Int)
+  @Field()
   @Column()
-  number!: number;
+  catalog!: string; // 345
 
   @Field()
   @Column()
@@ -43,12 +43,12 @@ export class Course extends BaseEntity {
 
   @Field()
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @OneToMany(() => Rating, (rating) => rating.reviewer)
-  ratings: Rating[];
+  ratings!: Rating[];
 }

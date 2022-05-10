@@ -19,11 +19,11 @@ export class User extends BaseEntity {
 
   @Field()
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Field()
   @Column({ unique: true })
@@ -37,5 +37,5 @@ export class User extends BaseEntity {
   email!: string;
 
   @OneToMany(() => Rating, (rating) => rating.reviewer)
-  ratings: Rating[];
+  ratings!: Rating[];
 }

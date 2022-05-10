@@ -18,10 +18,10 @@ import { v4 } from 'uuid';
 @ObjectType()
 class FieldError {
   @Field()
-  field: string;
+  field!: string;
 
   @Field()
-  message: string;
+  message!: string;
 }
 
 @ObjectType()
@@ -145,7 +145,7 @@ export class UserResolver {
         .returning('*')
         .execute();
       user = result.raw[0];
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === '23505') {
         return {
           errors: [

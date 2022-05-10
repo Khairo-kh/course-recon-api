@@ -28,27 +28,27 @@ export class Rating extends BaseEntity {
 
   @Field()
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Field(() => Float)
   @Column({ type: 'float' })
-  scale: number;
+  scale!: number;
 
   @Field()
   @Column()
-  reviewerId: number;
+  reviewerId!: number;
 
   @Field()
   @Column()
-  courseId: number;
+  courseId!: number;
 
   @ManyToOne(() => User, (user) => user.ratings)
-  reviewer: User;
+  reviewer!: User;
 
   @ManyToOne(() => Course, (course) => course.ratings)
-  course: Course;
+  course!: Course;
 }
