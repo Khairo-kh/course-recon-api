@@ -18,7 +18,7 @@ export class Course extends BaseEntity {
   id!: number;
 
   @Field()
-  @Column()
+  @Column({ unique: true })
   externalId!: string;
 
   @Field()

@@ -28,8 +28,6 @@ const main = async () => {
     entities: [Rating, User, Course],
   });
 
-  // Rating.delete({})
-
   dataSource
     .initialize()
     .then(() => {
@@ -86,7 +84,7 @@ const main = async () => {
   });
 
   app.listen(parseInt(process.env.PORT), () => {
-    console.log('server started on localhost:8000');
+    console.log(`server started on port ${process.env.PORT}`);
   });
 };
 

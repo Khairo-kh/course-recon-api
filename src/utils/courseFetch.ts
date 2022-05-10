@@ -42,7 +42,7 @@ export const getCourseDescription = async (
         },
       }
     );
-    description = response.data.description;
+    description = response.data[0].description;
   } catch (error) {
     console.log(
       'error fetching the course description from Concordia API: ',
