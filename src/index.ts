@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { __prod__ } from './constants';
 import session from 'express-session';
+import 'dotenv-safe/config';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
@@ -19,9 +20,7 @@ import { Course } from './entities/Course';
 const main = async () => {
   const dataSource = new DataSource({
     type: 'postgres',
-    database: 'courserecon',
-    username: 'postgres',
-    password: 'postgres',
+    url: process.env.DATABASE_URL,
     synchronize: true,
     logging: 'all',
     logger: 'advanced-console',
@@ -42,7 +41,7 @@ const main = async () => {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis('127.0.0.1:6379');
+  const redis = new Redis(process.env.REDIS_URL);
 
   app.set('trust proxy', 1);
 
@@ -65,8 +64,7 @@ const main = async () => {
         secure: __prod__,
         sameSite: 'lax',
       },
-      // TODO: Change this and store in env variable
-      secret: 'Deem-Dayroom-Appraiser-Velcro-Varsity-Lily-Icky-Tackling',
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
     })
@@ -86,7 +84,7 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(8000, () => {
+  app.listen(parseInt(process.env.PORT), () => {
     console.log('server started on localhost:8000');
   });
 };
