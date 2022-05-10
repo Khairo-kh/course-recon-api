@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Course } from './Course';
 import { User } from './User';
 
 @ObjectType()
@@ -41,7 +42,13 @@ export class Rating extends BaseEntity {
   @Column()
   reviewerId: number;
 
+  @Field()
+  @Column()
+  courseId: number;
 
   @ManyToOne(() => User, (user) => user.ratings)
   reviewer: User;
+
+  @ManyToOne(() => Course, (course) => course.ratings)
+  course: Course;
 }

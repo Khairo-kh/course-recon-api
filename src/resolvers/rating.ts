@@ -46,12 +46,14 @@ export class RatingResolver {
     @Arg('title') title: string,
     @Arg('description') description: string,
     @Arg('scale', () => Float) scale: number,
+    @Arg('courseId', () => Int) courseId: number,
     @Ctx() { req }: MyContext
   ): Promise<Rating> {
     return Rating.create({
       title,
       description,
       scale,
+      courseId,
       reviewerId: req.session.userId,
     }).save();
   }

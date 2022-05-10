@@ -14,6 +14,7 @@ import cors from 'cors';
 import { DataSource } from 'typeorm';
 import { Rating } from './entities/Rating';
 import { User } from './entities/User';
+import { Course } from './entities/Course';
 
 const main = async () => {
   const dataSource = new DataSource({
@@ -24,8 +25,10 @@ const main = async () => {
     synchronize: true,
     logging: 'all',
     logger: 'advanced-console',
-    entities: [Rating, User],
+    entities: [Rating, User, Course],
   });
+
+  // Rating.delete({})
 
   dataSource
     .initialize()
