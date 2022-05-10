@@ -9,8 +9,20 @@ declare module 'express-session' {
 }
 
 export type MyContext = {
-  dataSource: DataSource
+  dataSource: DataSource;
   req: Request;
   res: Response;
   redis: Redis;
+};
+
+export type CourseInfo = {
+  ID: string;
+  title: string;
+  subject: string;
+  catalog: string;
+  description: string;
+  prerequisites: string;
+  career?: string;
+  classUnit?: string;
+  crosslisted?: string | null;
 };

@@ -16,6 +16,7 @@ import { DataSource } from 'typeorm';
 import { Rating } from './entities/Rating';
 import { User } from './entities/User';
 import { Course } from './entities/Course';
+import { CourseResolver } from './resolvers/course';
 
 const main = async () => {
   const dataSource = new DataSource({
@@ -72,7 +73,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, RatingResolver, UserResolver],
+      resolvers: [HelloResolver, RatingResolver, UserResolver, CourseResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ dataSource, req, res, redis }),
