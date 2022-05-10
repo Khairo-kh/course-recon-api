@@ -1,11 +1,38 @@
 import { Rating } from '../entities/Rating';
-import { Arg, Float, Int, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  Float,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql';
+import { MyContext } from 'src/types';
+import { authenticate } from '../middleware/authenticate';
 
 @Resolver()
 export class RatingResolver {
   @Query(() => [Rating])
-  ratings(): Promise<Rating[]> {
-    return Rating.find();
+  async ratings(
+    @Arg('limit', () => Int) limit: number,
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+    @Ctx() { dataSource }: MyContext
+  ): Promise<Rating[]> {
+    const realLimit = Math.min(30, limit);
+    const result = await dataSource
+      .getRepository(Rating)
+      .createQueryBuilder('r')
+      .orderBy('"createdAt"', 'DESC')
+      .take(realLimit);
+
+    if (cursor) {
+      result.where('"createdAt" >= :cursor', {
+        cursor: new Date(cursor),
+      });
+    }
+    return result.getMany();
   }
 
   @Query(() => Rating, { nullable: true })
@@ -14,12 +41,19 @@ export class RatingResolver {
   }
 
   @Mutation(() => Rating, { nullable: true })
+  @UseMiddleware(authenticate)
   async addRating(
     @Arg('title') title: string,
     @Arg('description') description: string,
-    @Arg('scale', () => Float) scale: number
+    @Arg('scale', () => Float) scale: number,
+    @Ctx() { req }: MyContext
   ): Promise<Rating> {
-    return Rating.create({ title, description, scale }).save();
+    return Rating.create({
+      title,
+      description,
+      scale,
+      reviewerId: req.session.userId,
+    }).save();
   }
 
   @Mutation(() => Rating, { nullable: true })
