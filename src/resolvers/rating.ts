@@ -81,13 +81,17 @@ export class RatingResolver {
       .andWhere('"reviewerId" = :revId', { revId: req.session.userId })
       .returning('*')
       .execute();
-  
+
     return rating.raw[0];
   }
 
   @Mutation(() => Boolean)
-  async deleteRating(@Arg('id', () => Int) id: number): Promise<Boolean> {
-    await Rating.delete(id);
-    return true;
+  @UseMiddleware(isAuthenticated)
+  async deleteRating(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Boolean> {
+    const answer = await Rating.delete({ id, reviewerId: req.session.userId });
+    return answer.affected !== 0;
   }
 }
