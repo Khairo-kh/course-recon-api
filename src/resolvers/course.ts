@@ -7,7 +7,7 @@ import {
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
-import {MyContext } from '../types';
+import { MyContext } from '../types';
 import { authenticate } from '../middleware/authenticate';
 import { Course } from '../entities/Course';
 import { getCourseDescription, getCourseInfo } from '../utils/courseFetch';
@@ -40,21 +40,31 @@ export class CourseResolver {
     return Course.findOneBy({ id });
   }
 
+  @Query(() => Course, { nullable: true })
+  async findCourse(
+    @Arg('subject') subject: string,
+    @Arg('catalog') catalog: string
+  ): Promise<Course | null> {
+    let searchedCourse = await Course.findOneBy({ subject: subject.toUpperCase(), catalog });
+    if (!searchedCourse) {
+      searchedCourse = await this.addCourse(subject, catalog);
+    }
+    return searchedCourse;
+  }
+
   @Mutation(() => Course, { nullable: true })
   @UseMiddleware(authenticate)
   async addCourse(
     @Arg('subject') subject: string,
     @Arg('catalog') catalog: string
     // @Ctx() { req }: MyContext
-  ): Promise<Course | undefined> {
+  ): Promise<Course | null> {
     const courseInfo = await getCourseInfo(subject, catalog);
     if (!courseInfo || courseInfo.length === 0) {
-      return;
+      return null;
     }
 
     courseInfo[0].description = await getCourseDescription(courseInfo[0].ID);
-
-    console.log('DESC: => ', courseInfo);
 
     return Course.create({
       externalId: courseInfo[0].ID,
