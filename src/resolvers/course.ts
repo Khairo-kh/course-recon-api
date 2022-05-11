@@ -10,7 +10,7 @@ import {
 import { MyContext } from '../types';
 import { authenticate } from '../middleware/authenticate';
 import { Course } from '../entities/Course';
-import { getCourseDescription, getCourseInfo } from '../utils/courseFetch';
+import { getConcordiaCourse } from '../utils/courseFetch';
 
 @Resolver()
 export class CourseResolver {
@@ -45,7 +45,10 @@ export class CourseResolver {
     @Arg('subject') subject: string,
     @Arg('catalog') catalog: string
   ): Promise<Course | null> {
-    let searchedCourse = await Course.findOneBy({ subject: subject.toUpperCase(), catalog });
+    let searchedCourse = await Course.findOneBy({
+      subject: subject.toUpperCase(),
+      catalog,
+    });
     if (!searchedCourse) {
       searchedCourse = await this.addCourse(subject, catalog);
     }
@@ -57,44 +60,34 @@ export class CourseResolver {
   async addCourse(
     @Arg('subject') subject: string,
     @Arg('catalog') catalog: string
-    // @Ctx() { req }: MyContext
   ): Promise<Course | null> {
-    const courseInfo = await getCourseInfo(subject, catalog);
-    if (!courseInfo || courseInfo.length === 0) {
+    const courseInfo = await getConcordiaCourse(subject, catalog);
+
+    if (!courseInfo) {
       return null;
     }
 
-    courseInfo[0].description = await getCourseDescription(courseInfo[0].ID);
+    console.log({ courseInfo });
 
     return Course.create({
-      externalId: courseInfo[0].ID,
-      title: courseInfo[0].title,
-      subject: courseInfo[0].subject,
-      catalog: courseInfo[0].catalog,
-      prerequisites: courseInfo[0].prerequisites,
-      description: courseInfo[0].description,
+      externalId: courseInfo.ID,
+      title: courseInfo.title,
+      subject: courseInfo.subject,
+      catalog: courseInfo.catalog,
+      prerequisites: courseInfo.prerequisites,
+      description: courseInfo.description,
     }).save();
   }
 
   // @Mutation(() => Rating, { nullable: true })
-  // async updateRating(
-  //   @Arg('id', () => Int) id: number,
-  //   @Arg('title') title: string,
-  //   @Arg('description') description: string,
-  //   @Arg('scale', () => Float) scale: number
-  // ): Promise<Rating | null> {
-  //   const rating = await Rating.findOneBy({ id });
-  //   if (!rating) {
+  // async updateCourse(
+  //   @Arg('subject') subject: string,
+  //   @Arg('catalog') catalog: string
+  // ): Promise<Course | null> {
+  //   const currentDetails = await Course.findOneBy({ subject, catalog });
+  //   if (!currentDetails) {
   //     return null;
   //   }
-  //   if (
-  //     typeof title !== 'undefined' ||
-  //     typeof description !== 'undefined' ||
-  //     typeof scale !== 'undefined'
-  //   ) {
-  //     await Rating.update({ id }, { title, description, scale });
-  //   }
-  //   return rating;
   // }
 
   // @Mutation(() => Boolean)

@@ -53,3 +53,17 @@ export const getCourseDescription = async (
 
   return description;
 };
+
+export const getConcordiaCourse = async (
+  subject: string,
+  catalog: string
+): Promise<CourseInfo | null> => {
+  const courseInfo = await getCourseInfo(subject, catalog);
+  if (!courseInfo || courseInfo.length === 0) {
+    return null;
+  }
+
+  courseInfo[0].description = await getCourseDescription(courseInfo[0].ID);
+
+  return courseInfo[0];
+};
