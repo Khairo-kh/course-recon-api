@@ -36,6 +36,13 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['user', 'admin'],
+    default: 'user',
+  })
+  role!: string;
+
   @OneToMany(() => Rating, (rating) => rating.reviewer)
   ratings!: Rating[];
 }

@@ -8,9 +8,10 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { MyContext } from '../types';
-import { authenticate } from '../middleware/authenticate';
+import { isAuthenticated } from '../middleware/isAuthenticated';
 import { Course } from '../entities/Course';
 import { getConcordiaCourse } from '../utils/courseFetch';
+import { isAdmin } from '../middleware/isAdmin';
 
 @Resolver()
 export class CourseResolver {
@@ -56,7 +57,7 @@ export class CourseResolver {
   }
 
   @Mutation(() => Course, { nullable: true })
-  @UseMiddleware(authenticate)
+  @UseMiddleware(isAuthenticated)
   async addCourse(
     @Arg('subject') subject: string,
     @Arg('catalog') catalog: string
@@ -107,6 +108,7 @@ export class CourseResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseMiddleware(isAuthenticated, isAdmin)
   async deleteCourse(@Arg('id', () => Int) id: number): Promise<Boolean> {
     await Course.delete(id);
     return true;
