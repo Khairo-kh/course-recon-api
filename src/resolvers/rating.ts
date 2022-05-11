@@ -1,4 +1,3 @@
-import { Rating } from '../entities/Rating';
 import {
   Arg,
   Ctx,
@@ -7,10 +6,11 @@ import {
   Mutation,
   Query,
   Resolver,
-  UseMiddleware,
+  UseMiddleware
 } from 'type-graphql';
-import { MyContext } from '../types';
+import { Rating } from '../entities/Rating';
 import { isAuthenticated } from '../middleware/isAuthenticated';
+import { MyContext } from '../types';
 
 @Resolver()
 export class RatingResolver {

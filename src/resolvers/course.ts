@@ -5,13 +5,13 @@ import {
   Mutation,
   Query,
   Resolver,
-  UseMiddleware,
+  UseMiddleware
 } from 'type-graphql';
-import { MyContext } from '../types';
-import { isAuthenticated } from '../middleware/isAuthenticated';
 import { Course } from '../entities/Course';
-import { getConcordiaCourse } from '../utils/courseFetch';
 import { isAdmin } from '../middleware/isAdmin';
+import { isAuthenticated } from '../middleware/isAuthenticated';
+import { MyContext } from '../types';
+import { getConcordiaCourse } from '../utils/courseFetch';
 
 @Resolver()
 export class CourseResolver {

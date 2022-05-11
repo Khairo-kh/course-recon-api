@@ -1,22 +1,22 @@
-import 'reflect-metadata';
-import { __prod__ } from './constants';
-import session from 'express-session';
+import { ApolloServer } from 'apollo-server-express';
+import connectRedis from 'connect-redis';
+import cors from 'cors';
 import 'dotenv-safe/config';
 import express from 'express';
-import { ApolloServer } from 'apollo-server-express';
+import session from 'express-session';
+import Redis from 'ioredis';
+import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
+import { DataSource } from 'typeorm';
+import { __prod__ } from './constants';
+import { Course } from './entities/Course';
+import { Rating } from './entities/Rating';
+import { User } from './entities/User';
+import { CourseResolver } from './resolvers/course';
 import { HelloResolver } from './resolvers/hello';
 import { RatingResolver } from './resolvers/rating';
 import { UserResolver } from './resolvers/user';
-import connectRedis from 'connect-redis';
 import { MyContext } from './types';
-import Redis from 'ioredis';
-import cors from 'cors';
-import { DataSource } from 'typeorm';
-import { Rating } from './entities/Rating';
-import { User } from './entities/User';
-import { Course } from './entities/Course';
-import { CourseResolver } from './resolvers/course';
 
 const main = async () => {
   const dataSource = new DataSource({
