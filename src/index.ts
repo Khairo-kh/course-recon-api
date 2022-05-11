@@ -5,6 +5,7 @@ import 'dotenv-safe/config';
 import express from 'express';
 import session from 'express-session';
 import Redis from 'ioredis';
+import path from 'path';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { DataSource } from 'typeorm';
@@ -18,24 +19,32 @@ import { RatingResolver } from './resolvers/rating';
 import { UserResolver } from './resolvers/user';
 import { MyContext } from './types';
 
-const main = async () => {
-  const dataSource = new DataSource({
-    type: 'postgres',
-    url: process.env.DATABASE_URL,
-    // synchronize: true,
-    logging: 'all',
-    logger: 'advanced-console',
-    entities: [Rating, User, Course],
-  });
-
-  dataSource
-    .initialize()
-    .then(() => {
+export let dataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  // synchronize: true,
+  logging: 'all',
+  logger: 'advanced-console',
+  migrations: [path.join(__dirname, './migrations/*')],
+  entities: [Rating, User, Course],
+});
+/** 
+ * .then(() => {
       console.log('Data Source has been initialized!');
     })
     .catch((err) => {
       console.error('Error during Data Source initialization', err);
     });
+*/
+const main = async () => {
+  try {
+    dataSource = await dataSource.initialize();
+    console.log('Data Source has been initialized!');
+  } catch (err) {
+    console.error('Error during Data Source initialization', err);
+  }
+
+  await dataSource.runMigrations();
 
   const app = express();
 

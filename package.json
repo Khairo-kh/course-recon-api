@@ -9,7 +9,8 @@
     "build": "tsc",
     "dev": "nodemon dist/index.js",
     "clean": "rm -rf node_modules && rm -rf dist",
-    "gen:env": "npx gen-env-types .env -o src/env.d.ts -e ."
+    "gen:env": "npx gen-env-types .env -o src/env.d.ts -e .",
+    "gen:migration": "npx typeorm migration:generate src/migrations -d dist/index.js"
   },
   "author": "Khairo Khatib",
   "license": "GPL-3.0",
