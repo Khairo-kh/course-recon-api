@@ -79,20 +79,36 @@ export class CourseResolver {
     }).save();
   }
 
-  // @Mutation(() => Rating, { nullable: true })
-  // async updateCourse(
-  //   @Arg('subject') subject: string,
-  //   @Arg('catalog') catalog: string
-  // ): Promise<Course | null> {
-  //   const currentDetails = await Course.findOneBy({ subject, catalog });
-  //   if (!currentDetails) {
-  //     return null;
-  //   }
-  // }
+  @Mutation(() => Course, { nullable: true })
+  async updateCourse(
+    @Arg('subject') subject: string,
+    @Arg('catalog') catalog: string
+  ): Promise<Course | null> {
+    const currentDetails = await Course.findOneBy({ subject, catalog });
+    const updatedDetails = await getConcordiaCourse(subject, catalog);
+    console.log({ currentDetails });
+    if (!currentDetails || !updatedDetails) {
+      return null;
+    }
 
-  // @Mutation(() => Boolean)
-  // async deleteRating(@Arg('id', () => Int) id: number): Promise<Boolean> {
-  //   await Rating.delete(id);
-  //   return true;
-  // }
+    await Course.update(
+      { id: currentDetails.id },
+      {
+        externalId: updatedDetails.ID,
+        title: updatedDetails.title,
+        subject: updatedDetails.subject,
+        catalog: updatedDetails.catalog,
+        prerequisites: updatedDetails.prerequisites,
+        description: updatedDetails.description,
+      }
+    );
+
+    return currentDetails;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteCourse(@Arg('id', () => Int) id: number): Promise<Boolean> {
+    await Course.delete(id);
+    return true;
+  }
 }
