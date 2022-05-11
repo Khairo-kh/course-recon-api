@@ -22,7 +22,7 @@ const main = async () => {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    synchronize: true,
+    // synchronize: true,
     logging: 'all',
     logger: 'advanced-console',
     entities: [Rating, User, Course],
@@ -42,11 +42,11 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
 
-  app.set('trust proxy', 1);
+  app.set('proxy', 1);
 
   app.use(
     cors({
-      origin: 'http://localhost:3000',
+      origin: process.env.ORIGIN_CORS,
       credentials: true,
     })
   );

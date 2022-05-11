@@ -8,6 +8,7 @@ declare global {
       CONCORDIA_API_KEY: string;
       SESSION_SECRET: string;
       CONCORDIA_API_BASE_URL: string;
+      ORIGIN_CORS: string;
     }
   }
 }
