@@ -9,8 +9,8 @@ import {
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
-import { MyContext } from 'src/types';
-import { authenticate } from '../middleware/authenticate';
+import { MyContext } from '../types';
+import { isAuthenticated } from '../middleware/isAuthenticated';
 
 @Resolver()
 export class RatingResolver {
@@ -18,6 +18,7 @@ export class RatingResolver {
   async ratings(
     @Arg('limit', () => Int) limit: number,
     @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+    @Arg('courseNum', () => Int, { nullable: true }) courseNum: number | null,
     @Ctx() { dataSource }: MyContext
   ): Promise<Rating[]> {
     const realLimit = Math.min(30, limit);
@@ -32,6 +33,11 @@ export class RatingResolver {
         cursor: new Date(cursor),
       });
     }
+    if (courseNum) {
+      result.andWhere('"courseId" = :courseNum', {
+        courseNum,
+      });
+    }
     return result.getMany();
   }
 
@@ -41,7 +47,7 @@ export class RatingResolver {
   }
 
   @Mutation(() => Rating, { nullable: true })
-  @UseMiddleware(authenticate)
+  @UseMiddleware(isAuthenticated)
   async addRating(
     @Arg('title') title: string,
     @Arg('description') description: string,
@@ -59,24 +65,24 @@ export class RatingResolver {
   }
 
   @Mutation(() => Rating, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async updateRating(
     @Arg('id', () => Int) id: number,
     @Arg('title') title: string,
     @Arg('description') description: string,
-    @Arg('scale', () => Float) scale: number
+    @Arg('scale', () => Float) scale: number,
+    @Ctx() { req, dataSource }: MyContext
   ): Promise<Rating | null> {
-    const rating = await Rating.findOneBy({ id });
-    if (!rating) {
-      return null;
-    }
-    if (
-      typeof title !== 'undefined' ||
-      typeof description !== 'undefined' ||
-      typeof scale !== 'undefined'
-    ) {
-      await Rating.update({ id }, { title, description, scale });
-    }
-    return rating;
+    const rating = await dataSource
+      .createQueryBuilder()
+      .update(Rating)
+      .set({ title, description, scale })
+      .where('id = :id', { id })
+      .andWhere('"reviewerId" = :revId', { revId: req.session.userId })
+      .returning('*')
+      .execute();
+  
+    return rating.raw[0];
   }
 
   @Mutation(() => Boolean)
