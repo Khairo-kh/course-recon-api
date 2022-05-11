@@ -68,8 +68,6 @@ export class CourseResolver {
       return null;
     }
 
-    console.log({ courseInfo });
-
     return Course.create({
       externalId: courseInfo.ID,
       title: courseInfo.title,
@@ -83,28 +81,31 @@ export class CourseResolver {
   @Mutation(() => Course, { nullable: true })
   async updateCourse(
     @Arg('subject') subject: string,
-    @Arg('catalog') catalog: string
+    @Arg('catalog') catalog: string,
+    @Ctx() { dataSource }: MyContext
   ): Promise<Course | null> {
     const currentDetails = await Course.findOneBy({ subject, catalog });
     const updatedDetails = await getConcordiaCourse(subject, catalog);
-    console.log({ currentDetails });
     if (!currentDetails || !updatedDetails) {
       return null;
     }
 
-    await Course.update(
-      { id: currentDetails.id },
-      {
+    const updatedCourse = await dataSource
+      .createQueryBuilder()
+      .update(Course)
+      .set({
         externalId: updatedDetails.ID,
         title: updatedDetails.title,
         subject: updatedDetails.subject,
         catalog: updatedDetails.catalog,
         prerequisites: updatedDetails.prerequisites,
         description: updatedDetails.description,
-      }
-    );
+      })
+      .where('id = :courseId', { courseId: currentDetails.id })
+      .returning('*')
+      .execute();
 
-    return currentDetails;
+    return updatedCourse.raw[0];
   }
 
   @Mutation(() => Boolean)
