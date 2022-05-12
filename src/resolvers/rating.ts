@@ -11,6 +11,7 @@ import {
 import { Rating } from '../entities/Rating';
 import { isAuthenticated } from '../middleware/isAuthenticated';
 import { MyContext } from '../types';
+import { FieldError } from './FieldInputAndError';
 
 @Resolver()
 export class RatingResolver {
@@ -54,7 +55,10 @@ export class RatingResolver {
     @Arg('scale', () => Float) scale: number,
     @Arg('courseId', () => Int) courseId: number,
     @Ctx() { req }: MyContext
-  ): Promise<Rating> {
+  ): Promise<Rating | FieldError[]> {
+    if (scale < 0 || scale > 5) {
+      throw new Error('scale must be a value from 0 to 5 (inclusive)');
+    }
     return Rating.create({
       title,
       description,
@@ -73,6 +77,9 @@ export class RatingResolver {
     @Arg('scale', () => Float) scale: number,
     @Ctx() { req, dataSource }: MyContext
   ): Promise<Rating | null> {
+    if (scale < 0 || scale > 5) {
+      throw new Error('scale must be a value from 0 to 5 (inclusive)');
+    }
     const rating = await dataSource
       .createQueryBuilder()
       .update(Rating)
