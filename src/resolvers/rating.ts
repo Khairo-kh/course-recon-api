@@ -6,7 +6,7 @@ import {
   Mutation,
   Query,
   Resolver,
-  UseMiddleware
+  UseMiddleware,
 } from 'type-graphql';
 import { Rating } from '../entities/Rating';
 import { isAuthenticated } from '../middleware/isAuthenticated';
@@ -42,7 +42,7 @@ export class RatingResolver {
   }
 
   @Query(() => Rating, { nullable: true })
-  rating(@Arg('id') id: number): Promise<Rating | null> {
+  rating(@Arg('id', () => Int) id: number): Promise<Rating | null> {
     return Rating.findOneBy({ id });
   }
 
