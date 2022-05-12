@@ -1,4 +1,4 @@
-import { UsernamePasswordInput } from '../resolvers/UsernamePasswordInput';
+import { UsernamePasswordInput } from '../resolvers/FieldInputAndError';
 import validator from 'validator';
 
 export const registerValidation = (options: UsernamePasswordInput) => {

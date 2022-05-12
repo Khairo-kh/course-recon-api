@@ -1,37 +1,11 @@
 import { User } from '../entities/User';
 import { MyContext } from 'src/types';
 import argon2 from 'argon2';
-import {
-  Arg,
-  Ctx,
-  Field,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-} from 'type-graphql';
-import { UsernamePasswordInput } from './UsernamePasswordInput';
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { UsernamePasswordInput, UserResponse } from './FieldInputAndError';
 import { registerValidation } from '../utils/registerValidation';
 import { sendEmail } from '../utils/email';
 import { v4 } from 'uuid';
-
-@ObjectType()
-class FieldError {
-  @Field()
-  field!: string;
-
-  @Field()
-  message!: string;
-}
-
-@ObjectType()
-class UserResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-
-  @Field(() => User, { nullable: true })
-  user?: User;
-}
 
 @Resolver()
 export class UserResolver {
