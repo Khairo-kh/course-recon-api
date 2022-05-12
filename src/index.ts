@@ -28,14 +28,7 @@ export let dataSource = new DataSource({
   migrations: [path.join(__dirname, './migrations/*')],
   entities: [Rating, User, Course],
 });
-/** 
- * .then(() => {
-      console.log('Data Source has been initialized!');
-    })
-    .catch((err) => {
-      console.error('Error during Data Source initialization', err);
-    });
-*/
+
 const main = async () => {
   try {
     dataSource = await dataSource.initialize();
@@ -51,7 +44,7 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
 
-  app.set('proxy', 1);
+  app.set('trust proxy', 1);
 
   app.use(
     cors({
@@ -71,6 +64,7 @@ const main = async () => {
         httpOnly: true,
         secure: __prod__,
         sameSite: 'lax',
+        domain: __prod__ ? '.courserecon.com' : undefined,
       },
       secret: process.env.SESSION_SECRET,
       resave: false,
@@ -83,6 +77,7 @@ const main = async () => {
       resolvers: [HelloResolver, RatingResolver, UserResolver, CourseResolver],
       validate: false,
     }),
+    introspection: true,
     context: ({ req, res }): MyContext => ({ dataSource, req, res, redis }),
   });
 
