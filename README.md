@@ -1,9 +1,7 @@
 ## Course Recon API  
-[![Try in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/16009134-851a9765-e0c2-46c1-9d79-75c877742a3d?action=collection%2Ffork&collection-url=entityId%3D16009134-851a9765-e0c2-46c1-9d79-75c877742a3d%26entityType%3Dcollection%26workspaceId%3D7bec6cac-b1e7-4bea-83dc-324e85650b65#?env%5Bprod%5D=W3sia2V5IjoidXJsIiwidmFsdWUiOiJodHRwczovL2FwaS5jb3Vyc2VyZWNvbi5jb20vZ3JhcGhxbC8iLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCJ9XQ==)
-
 
 ### Overview:                                      
-Back-end server for course evaluation application. Works with Concordia University now with the possiblity to extend to other universities in the future. Supports adding/updating/removing/reading reviews for any course in Concordia University (Thanks to Concordia's open data API). The application utilizes robust technologies such as TypeScript as the primary programming language and GraphQL as the API query technology and many other tools and services. Please feel free to try it out in postman with the provided link above. 
+Back-end server for course evaluation application. Works with Concordia University now with the possiblity to extend to other universities in the future. Supports adding/updating/removing/reading reviews for any course in Concordia University (Thanks to Concordia's open data API). The application utilizes robust technologies such as TypeScript as the primary programming language and GraphQL as the API query technology and many other tools and services. Please feel free to try it out! 
 
 ### Documentation:
 You can find the documentation for the API [here!](https://documenter.getpostman.com/view/16009134/UyxgK8mY)  
@@ -23,12 +21,5 @@ You can find the documentation for the API [here!](https://documenter.getpostman
   <img src="https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx"/>
   <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
 </div>
-
-<!-- - TypeScript 
-- GraphQL
-- TypeOrm
-- Apollo
-- PostgreSQL
-- Docker -->
 
 
